@@ -38,6 +38,23 @@ fn main() -> std::io::Result<()> {
 const MTU:usize = 1320;
 const SENDER:u8 = 1;
 const RECVER:u8 = 2;
+const DATA:u8 = 3;//<frametype><data length><data>
+const RTP:u8 = 0x80;
+enum FrameType{
+    KNOWN,
+    SENDER,
+    RECVER,
+    DATA,
+    RTP,
+}
+impl FrameType{
+    fn new(t :u8)->FrameType{
+        if t == SENDER {
+            return FrameType::SENDER;
+        }
+        FrameType::KNOWN
+    }
+}
 
 struct Sender{
     s : Arc<UdpSocket>
@@ -132,6 +149,7 @@ struct Server{
     recver:Recver,
 }
 
+
 impl Server{
     pub fn listen<A:ToSocketAddrs>(la:A)->std::io::Result<Server>{
         let socket = UdpSocket::bind(la)?;
@@ -143,7 +161,25 @@ impl Server{
         Ok(ret)
     }
     pub fn accept(&self)->Result<StreamType>{
-        
+        let ft = &mut [0];
+        let nr = self.recver.recv(ft)?;
+        match FrameType::new(ft[0]) {
+            FrameType::SENDER =>{
+
+            }
+            FrameType::RECVER =>{
+
+            }
+            FrameType::DATA =>{
+
+            }
+            FrameType::RTP =>{
+
+            }
+            FrameType::KNOWN =>{
+
+            }
+        }
         Ok(StreamType::Known)
     }
 }
